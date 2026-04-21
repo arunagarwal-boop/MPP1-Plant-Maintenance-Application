@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MooMark Plant Maintenance</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0a0f;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+  .stage{display:flex;align-items:center;justify-content:center;gap:40px;padding:40px;width:100vw;height:100vh}
+  ::-webkit-scrollbar{width:0}
+  .tweaks-panel{position:fixed;bottom:24px;right:24px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;width:260px;z-index:9999;font-family:'DM Sans',sans-serif;display:none}
+  .tweaks-panel.visible{display:block}
+  .tweaks-title{color:#fff;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;opacity:0.6}
+  .tweak-row{margin-bottom:12px}
+  .tweak-label{color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:6px;display:block}
+  .tweak-options{display:flex;gap:6px;flex-wrap:wrap}
+  .tweak-btn{padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+  .tweak-btn.active{background:#0F3E8C;border-color:#0F3E8C;color:#fff}
+</style>
+<template id="__bundler_thumbnail" data-bg-color="#0F3E8C">
+  <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="400" fill="#0F3E8C"/>
+    <!-- Cow head -->
+    <ellipse cx="200" cy="210" rx="70" ry="58" fill="white"/>
+    <ellipse cx="200" cy="155" rx="45" ry="45" fill="white"/>
+    <ellipse cx="155" cy="132" rx="24" ry="18" fill="white"/>
+    <ellipse cx="245" cy="132" rx="24" ry="18" fill="white"/>
+    <circle cx="183" cy="152" r="11" fill="#0F3E8C"/>
+    <circle cx="217" cy="152" r="11" fill="#0F3E8C"/>
+    <ellipse cx="200" cy="178" rx="22" ry="14" fill="rgba(255,255,255,0.25)"/>
+    <!-- mooMark text -->
+    <text x="200" y="295" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="32" fill="white">moo</text>
+    <text x="200" y="330" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="32" fill="#00A882">Mark</text>
+  </svg>
+</template>
+</head>
+<body>
+<script type="text/babel">
+// ── iOS Frame (inlined) ───────────────────────────────────────
+function IOSStatusBar({ dark = false, time = '9:41' }) {
+  const c = dark ? '#fff' : '#000';
+  return (
+    <div style={{display:'flex',gap:154,alignItems:'center',justifyContent:'center',padding:'21px 24px 19px',boxSizing:'border-box',position:'relative',zIndex:20,width:'100%'}}>
+      <div style={{flex:1,height:22,display:'flex',alignItems:'center',justifyContent:'center',paddingTop:1.5}}>
+        <span style={{fontFamily:'-apple-system,"SF Pro",system-ui',fontWeight:590,fontSize:17,lineHeight:'22px',color:c}}>{time}</span>
+      </div>
+      <div style={{flex:1,height:22,display:'flex',alignItems:'center',justifyContent:'center',gap:7,paddingTop:1,paddingRight:1}}>
+        <svg width="19" height="12" viewBox="0 0 19 12"><rect x="0" y="7.5" width="3.2" height="4.5" rx="0.7" fill={c}/><rect x="4.8" y="5" width="3.2" height="7" rx="0.7" fill={c}/><rect x="9.6" y="2.5" width="3.2" height="9.5" rx="0.7" fill={c}/><rect x="14.4" y="0" width="3.2" height="12" rx="0.7" fill={c}/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill={c}/><path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill={c}/><circle cx="8.5" cy="10.5" r="1.5" fill={c}/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke={c} strokeOpacity="0.35" fill="none"/><rect x="2" y="2" width="20" height="9" rx="2" fill={c}/><path d="M25 4.5V8.5C25.8 8.2 26.5 7.2 26.5 6.5C26.5 5.8 25.8 4.8 25 4.5Z" fill={c} fillOpacity="0.4"/></svg>
+      </div>
+    </div>
+  );
+}
+function IOSGlassPill({ children, dark = false, style = {} }) {
+  return (
+    <div style={{height:44,minWidth:44,borderRadius:9999,position:'relative',overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:dark?'0 2px 6px rgba(0,0,0,0.35)':'0 1px 3px rgba(0,0,0,0.07)',...style}}>
+      <div style={{position:'absolute',inset:0,borderRadius:9999,backdropFilter:'blur(12px) saturate(180%)',WebkitBackdropFilter:'blur(12px) saturate(180%)',background:dark?'rgba(120,120,128,0.28)':'rgba(255,255,255,0.5)'}}/>
+      <div style={{position:'absolute',inset:0,borderRadius:9999,boxShadow:dark?'inset 1.5px 1.5px 1px rgba(255,255,255,0.15)':'inset 1.5px 1.5px 1px rgba(255,255,255,0.7)',border:dark?'0.5px solid rgba(255,255,255,0.15)':'0.5px solid rgba(0,0,0,0.06)'}}/>
+      <div style={{position:'relative',zIndex:1,display:'flex',alignItems:'center',padding:'0 4px'}}>{children}</div>
+    </div>
+  );
+}
+function IOSNavBar({ title = 'Title', dark = false, trailingIcon = true }) {
+  const muted = dark ? 'rgba(255,255,255,0.6)' : '#404040';
+  const text = dark ? '#fff' : '#000';
+  const pillIcon = (content) => (
+    <IOSGlassPill dark={dark}><div style={{width:36,height:36,display:'flex',alignItems:'center',justifyContent:'center'}}>{content}</div></IOSGlassPill>
+  );
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:10,paddingTop:62,paddingBottom:10,position:'relative',zIndex:5}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 16px'}}>
+        {pillIcon(<svg width="12" height="20" viewBox="0 0 12 20" fill="none" style={{marginLeft:-1}}><path d="M10 2L2 10l8 8" stroke={muted} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>)}
+        {trailingIcon && pillIcon(<svg width="22" height="6" viewBox="0 0 22 6"><circle cx="3" cy="3" r="2.5" fill={muted}/><circle cx="11" cy="3" r="2.5" fill={muted}/><circle cx="19" cy="3" r="2.5" fill={muted}/></svg>)}
+      </div>
+      <div style={{padding:'0 16px',fontFamily:'-apple-system,system-ui',fontSize:34,fontWeight:700,lineHeight:'41px',color:text,letterSpacing:0.4}}>{title}</div>
+    </div>
+  );
+}
+function IOSListRow({ title, detail, icon, chevron = true, isLast = false, dark = false }) {
+  const text = dark ? '#fff' : '#000';
+  const sec = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+  const ter = dark ? 'rgba(235,235,245,0.3)' : 'rgba(60,60,67,0.3)';
+  const sep = dark ? 'rgba(84,84,88,0.65)' : 'rgba(60,60,67,0.12)';
+  return (
+    <div style={{display:'flex',alignItems:'center',minHeight:52,padding:'0 16px',position:'relative',fontFamily:'-apple-system,system-ui',fontSize:17,letterSpacing:-0.43}}>
+      {icon && <div style={{width:30,height:30,borderRadius:7,background:icon,marginRight:12,flexShrink:0}}/>}
+      <div style={{flex:1,color:text}}>{title}</div>
+      {detail && <span style={{color:sec,marginRight:6}}>{detail}</span>}
+      {chevron && <svg width="8" height="14" viewBox="0 0 8 14" style={{flexShrink:0}}><path d="M1 1l6 6-6 6" stroke={ter} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+      {!isLast && <div style={{position:'absolute',bottom:0,right:0,left:icon?58:16,height:0.5,background:sep}}/>}
+    </div>
+  );
+}
+function IOSList({ header, children, dark = false }) {
+  const hc = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+  const bg = dark ? '#1C1C1E' : '#fff';
+  return (
+    <div>
+      {header && <div style={{fontFamily:'-apple-system,system-ui',fontSize:13,color:hc,textTransform:'uppercase',padding:'8px 36px 6px',letterSpacing:-0.08}}>{header}</div>}
+      <div style={{background:bg,borderRadius:26,margin:'0 16px',overflow:'hidden'}}>{children}</div>
+    </div>
+  );
+}
+function IOSDevice({ children, width = 402, height = 874, dark = false, title, keyboard = false }) {
+  return (
+    <div style={{width,height,borderRadius:48,overflow:'hidden',position:'relative',background:dark?'#000':'#F2F2F7',boxShadow:'0 40px 80px rgba(0,0,0,0.18),0 0 0 1px rgba(0,0,0,0.12)',fontFamily:'-apple-system,system-ui,sans-serif',WebkitFontSmoothing:'antialiased'}}>
+      <div style={{position:'absolute',top:11,left:'50%',transform:'translateX(-50%)',width:126,height:37,borderRadius:24,background:'#000',zIndex:50}}/>
+      <div style={{position:'absolute',top:0,left:0,right:0,zIndex:10}}><IOSStatusBar dark={dark}/></div>
+      <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
+        {title !== undefined && <IOSNavBar title={title} dark={dark}/>}
+        <div style={{flex:1,overflow:'auto'}}>{children}</div>
+      </div>
+      <div style={{position:'absolute',bottom:0,left:0,right:0,zIndex:60,height:34,display:'flex',justifyContent:'center',alignItems:'flex-end',paddingBottom:8,pointerEvents:'none'}}>
+        <div style={{width:139,height:5,borderRadius:100,background:dark?'rgba(255,255,255,0.7)':'rgba(0,0,0,0.25)'}}/>
+      </div>
+    </div>
+  );
+}
+</script>
+<script type="text/babel">
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "role": "operator",
+  "theme": "light",
+  "deviceType": "ios"
+}/*EDITMODE-END*/;
+
+// ── Brand ────────────────────────────────────────────────────
+const B = {
+  blue: '#0F3E8C',
+  blueLight: '#1A52B8',
+  teal: '#00876A',
+  tealLight: '#00A882',
+  bg: '#F5F7FA',
+  card: '#FFFFFF',
+  text: '#0D1117',
+  sub: '#5A6478',
+  border: '#E2E8F0',
+  red: '#DC2626',
+  amber: '#D97706',
+  green: '#16A34A',
+  redBg: '#FEF2F2',
+  amberBg: '#FFFBEB',
+  greenBg: '#F0FDF4',
+};
+
+// ── Airtable Integration ─────────────────────────────────────
+const AT_BASE  = 'appB4plmscFrAlsxb';
+const AT_TABLE = 'tblIWogLXTK0xAHcG';
+const AT_TOKEN = 'patpFi3nYObIkCn1S.d01f23bcc60c8f40a1c31f2abbf31712c4b46b15023488949a0c277efc66b36e';
+const AT_URL   = `https://api.airtable.com/v0/${AT_BASE}/${AT_TABLE}`;
+const AT_HDR   = { 'Authorization': `Bearer ${AT_TOKEN}`, 'Content-Type': 'application/json' };
+
+const statusToAT   = s => ({'open':'Open','assigned':'Assigned','in_progress':'In Progress','resolved':'Resolved','closed':'Closed'}[s]||'Open');
+const statusFromAT = s => ({'Open':'open','Assigned':'assigned','In Progress':'in_progress','Resolved':'resolved','Closed':'closed'}[s]||'open');
+const sevToAT      = s => s ? s.charAt(0).toUpperCase()+s.slice(1) : 'Medium';
+const sevFromAT    = s => (s||'medium').toLowerCase();
+
+function atToTicket(rec){
+  const f = rec.fields;
+  const title = f['Title'] || '';
+  const colonIdx = title.indexOf(':');
+  const ticketId = colonIdx > -1 ? title.slice(0, colonIdx).trim() : ('AT-' + rec.id.slice(-5));
+  const machine   = colonIdx > -1 ? title.slice(colonIdx+1).trim() : title;
+  const rawDate   = f['Created At'];
+  let createdAt = '—';
+  if(rawDate){
+    const d = new Date(rawDate);
+    const today = new Date();
+    const diff = Math.floor((today - d)/(1000*60*60*24));
+    createdAt = diff === 0 ? 'Today ' + d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})
+              : diff === 1 ? 'Yesterday'
+              : d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  }
+  return {
+    airtableId:  rec.id,
+    id:          ticketId,
+    machine:     machine || '—',
+    location:    f['Plant'] || '—',
+    category:    f['Category'] || 'Mechanical',
+    severity:    sevFromAT(f['Priority']),
+    status:      statusFromAT(f['Status']),
+    desc:        f['Description'] || '',
+    assignedTo:  f['Assigned To'] || null,
+    createdBy:   f['Raised By'] || 'Unknown',
+    createdAt,
+    downtime:    '',
+    parts:       '',
+    photos:      0,
+    resolutionNotes: f['Resolution Notes'] || '',
+    resolvedAt:  f['Resolved At'] || null,
+  };
+}
+
+async function atFetchAll(){
+  const res = await fetch(AT_URL + '?sort%5B0%5D%5Bfield%5D=Created+At&sort%5B0%5D%5Bdirection%5D=desc', { headers: AT_HDR });
+  if(!res.ok) throw new Error('Fetch failed ' + res.status);
+  const data = await res.json();
+  return (data.records||[]).map(atToTicket);
+}
+
+async function atCreate(fields){
+  const res = await fetch(AT_URL, { method:'POST', headers:AT_HDR, body:JSON.stringify({fields}) });
+  if(!res.ok) throw new Error('Create failed ' + res.status);
+  return atToTicket(await res.json());
+}
+
+async function atUpdate(airtableId, fields){
+  const res = await fetch(`${AT_URL}/${airtableId}`, { method:'PATCH', headers:AT_HDR, body:JSON.stringify({fields}) });
+  if(!res.ok) throw new Error('Update failed ' + res.status);
+  return atToTicket(await res.json());
+}
+
+function generateTicketId(){
+  return 'TKT-' + String(Date.now()).slice(-4);
+}
+
+// ── Sample Data (fallback while loading) ─────────────────────
+const TICKETS = [
+  {id:'TKT-001', machine:'Pasteurizer Unit 3', location:'Zone A', category:'Mechanical', severity:'critical', status:'open', desc:'Bearing noise in main drive shaft. Unusual vibration detected during shift start.', assignedTo:null, createdBy:'Ramesh K.', createdAt:'Today 08:32', downtime:'4 hrs', parts:'Bearing 6205-2RS, Lubricant grease', photos:1},
+  {id:'TKT-002', machine:'Homogenizer H-2', location:'Zone B', category:'Electrical', severity:'high', status:'assigned', desc:'Control panel tripping repeatedly. Fuse blown twice in last 2 hours.', assignedTo:'Suresh M.', createdBy:'Priya R.', createdAt:'Today 07:15', downtime:'2 hrs', parts:'Fuse 32A, Control relay', photos:0},
+  {id:'TKT-003', machine:'CIP Station 1', location:'Zone C', category:'Plumbing', severity:'medium', status:'in_progress', desc:'Chemical dosing pump showing irregular flow rates.', assignedTo:'Vijay T.', createdBy:'Anand P.', createdAt:'Yesterday', downtime:'1 hr', parts:'Diaphragm pump seal kit', photos:2},
+  {id:'TKT-004', machine:'Cooling Tower CT-1', location:'Zone D', category:'Mechanical', severity:'low', status:'resolved', desc:'Fan belt slipping - minor noise but no production impact.', assignedTo:'Suresh M.', createdBy:'Kiran L.', createdAt:'2 days ago', downtime:'30 min', parts:'V-belt A42', photos:0},
+  {id:'TKT-005', machine:'Boiler BLR-2', location:'Zone A', category:'Electrical', severity:'critical', status:'open', desc:'Safety valve leaking steam. Pressure gauge fluctuating.', assignedTo:null, createdBy:'Ramesh K.', createdAt:'Today 09:45', downtime:'6 hrs', parts:'Safety valve 1/2", Pressure gauge', photos:1},
+];
+
+const NOTIFICATIONS = [
+  {id:1, type:'assigned', text:'TKT-002 assigned to you', sub:'Homogenizer H-2 — Electrical fault', time:'5m ago', unread:true},
+  {id:2, type:'critical', text:'Critical ticket raised — TKT-005', sub:'Boiler BLR-2 needs immediate attention', time:'12m ago', unread:true},
+  {id:3, type:'update', text:'TKT-003 status updated to In Progress', sub:'Vijay T. has acknowledged the task', time:'1h ago', unread:false},
+  {id:4, type:'resolved', text:'TKT-004 has been resolved', sub:'Cooling Tower CT-1 — Fan belt replaced', time:'2h ago', unread:false},
+  {id:5, type:'stores', text:'Spare parts request approved', sub:'Bearing 6205-2RS — 2 units dispatched', time:'3h ago', unread:false},
+];
+
+// ── Status helpers ───────────────────────────────────────────
+const severityColor = s => s==='critical'?B.red:s==='high'?B.amber:s==='medium'?'#7C3AED':B.green;
+const severityBg    = s => s==='critical'?B.redBg:s==='high'?B.amberBg:s==='medium'?'#F5F3FF':B.greenBg;
+const statusLabel   = s => ({open:'Open',assigned:'Assigned',in_progress:'In Progress',resolved:'Resolved',closed:'Closed'}[s]||s);
+const statusColor   = s => s==='open'?B.red:s==='assigned'?B.amber:s==='in_progress'?B.blueLight:B.green;
+const statusBg      = s => s==='open'?B.redBg:s==='assigned'?B.amberBg:s==='in_progress'?'#EFF6FF':B.greenBg;
+
+// ── MooMark Logo SVG ─────────────────────────────────────────
+function MooMarkLogo({size=32, dark=false}){
+  const c = dark ? '#fff' : B.blue;
+  return (
+    <svg width={size*3.2} height={size} viewBox="0 0 128 40">
+      {/* Cow head silhouette mark */}
+      <ellipse cx="20" cy="22" rx="12" ry="10" fill={c}/>
+      <ellipse cx="20" cy="13" rx="7" ry="7" fill={c}/>
+      {/* Ears */}
+      <ellipse cx="11" cy="10" rx="4" ry="3" fill={c}/>
+      <ellipse cx="29" cy="10" rx="4" ry="3" fill={c}/>
+      {/* Cutout eyes */}
+      <circle cx="16.5" cy="13" r="1.8" fill={dark?'#0a0a0f':'#F5F7FA'}/>
+      <circle cx="23.5" cy="13" r="1.8" fill={dark?'#0a0a0f':'#F5F7FA'}/>
+      {/* Nose */}
+      <ellipse cx="20" cy="19" rx="3.5" ry="2.2" fill={dark?'rgba(255,255,255,0.25)':'rgba(15,62,140,0.2)'}/>
+      {/* mooMark text */}
+      <text x="38" y="17" fontFamily="DM Sans, sans-serif" fontWeight="800" fontSize="12" fill={c}>moo</text>
+      <text x="38" y="32" fontFamily="DM Sans, sans-serif" fontWeight="700" fontSize="12" fill={B.teal}>Mark</text>
+    </svg>
+  );
+}
+
+// ── Shared Components ────────────────────────────────────────
+function Chip({label, color, bg, size='sm'}){
+  return <span style={{display:'inline-block',background:bg,color,borderRadius:999,padding:size==='sm'?'2px 8px':'3px 10px',fontSize:size==='sm'?10:11,fontWeight:600,letterSpacing:0.2}}>{label}</span>;
+}
+
+function TicketCard({ticket, onPress}){
+  return (
+    <div onClick={onPress} style={{background:B.card,borderRadius:16,padding:14,marginBottom:10,boxShadow:'0 1px 4px rgba(0,0,0,0.07)',cursor:'pointer',border:'1px solid '+B.border,transition:'transform 0.1s',active:{transform:'scale(0.98)'}}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+        <div>
+          <div style={{fontSize:11,color:B.sub,fontWeight:500,marginBottom:2}}>{ticket.id} · {ticket.category}</div>
+          <div style={{fontSize:14,fontWeight:700,color:B.text,lineHeight:1.3}}>{ticket.machine}</div>
+          <div style={{fontSize:11,color:B.sub,marginTop:1}}>{ticket.location}</div>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4}}>
+          <Chip label={ticket.severity.toUpperCase()} color={severityColor(ticket.severity)} bg={severityBg(ticket.severity)}/>
+          <Chip label={statusLabel(ticket.status)} color={statusColor(ticket.status)} bg={statusBg(ticket.status)}/>
+        </div>
+      </div>
+      <div style={{fontSize:12,color:B.sub,lineHeight:1.5,marginBottom:8,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{ticket.desc}</div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span style={{fontSize:11,color:B.sub}}>{ticket.assignedTo ? `→ ${ticket.assignedTo}` : 'Unassigned'}</span>
+        <span style={{fontSize:11,color:B.sub}}>{ticket.createdAt}</span>
+      </div>
+    </div>
+  );
+}
+
+function BottomNav({active, onNav, role}){
+  const tabs = role==='technician' 
+    ? [{id:'home',icon:'⊞',label:'Dashboard'},{id:'tasks',icon:'☑',label:'My Tasks'},{id:'notifications',icon:'🔔',label:'Alerts'},{id:'profile',icon:'◉',label:'Profile'}]
+    : [{id:'home',icon:'⊞',label:'Dashboard'},{id:'tasks',icon:'☰',label:'Tickets'},{id:'new',icon:'+',label:'New'},{id:'notifications',icon:'🔔',label:'Alerts'},{id:'profile',icon:'◉',label:'Profile'}];
+  return (
+    <div style={{position:'absolute',bottom:0,left:0,right:0,height:80,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(20px)',borderTop:'1px solid '+B.border,display:'flex',alignItems:'flex-start',paddingTop:8,paddingBottom:16,zIndex:100}}>
+      {tabs.map(t=>(
+        <div key={t.id} onClick={()=>onNav(t.id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,cursor:'pointer'}}>
+          {t.id==='new'
+            ? <div style={{width:44,height:44,borderRadius:14,background:B.blue,display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,color:'#fff',fontWeight:300,marginTop:-22,boxShadow:'0 4px 16px rgba(15,62,140,0.35)'}}>{t.icon}</div>
+            : <div style={{fontSize:18,lineHeight:1,color:active===t.id?B.blue:B.sub,transition:'color 0.15s'}}>{t.icon}</div>
+          }
+          {t.id!=='new' && <span style={{fontSize:10,color:active===t.id?B.blue:B.sub,fontWeight:active===t.id?600:400}}>{t.label}</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Screen: Login ────────────────────────────────────────────
+function LoginScreen({onLogin}){
+  const [selected, setSelected] = React.useState(null);
+  const roles = [
+    {id:'operator',label:'Plant Operator',sub:'Log & track issues',icon:'🏭'},
+    {id:'technician',label:'Maintenance Tech',sub:'Work on assigned tasks',icon:'🔧'},
+    {id:'supervisor',label:'Supervisor',sub:'Oversee all operations',icon:'📋'},
+    {id:'stores',label:'Stores',sub:'Manage spare parts',icon:'📦'},
+    {id:'admin',label:'Admin',sub:'Manage users & settings',icon:'⚙️'},
+  ];
+  return (
+    <div style={{height:'100%',background:B.blue,display:'flex',flexDirection:'column'}}>
+      {/* Header */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'40px 24px 24px'}}>
+        <MooMarkLogo size={44} dark={true}/>
+        <div style={{marginTop:24,color:'rgba(255,255,255,0.7)',fontSize:13,textAlign:'center',fontWeight:500}}>Plant Maintenance System</div>
+        <div style={{marginTop:4,color:'rgba(255,255,255,0.4)',fontSize:11,textAlign:'center'}}>Select your role to continue</div>
+      </div>
+      {/* Role picker */}
+      <div style={{background:B.bg,borderRadius:'24px 24px 0 0',padding:'24px 20px 100px'}}>
+        <div style={{fontSize:13,fontWeight:600,color:B.sub,marginBottom:12,textTransform:'uppercase',letterSpacing:0.5}}>I am a…</div>
+        {roles.map(r=>(
+          <div key={r.id} onClick={()=>setSelected(r.id)} style={{display:'flex',alignItems:'center',gap:14,padding:'14px 16px',borderRadius:14,marginBottom:8,background:selected===r.id?B.blue:'#fff',border:'1.5px solid '+(selected===r.id?B.blue:B.border),cursor:'pointer',transition:'all 0.15s'}}>
+            <span style={{fontSize:20}}>{r.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:600,color:selected===r.id?'#fff':B.text}}>{r.label}</div>
+              <div style={{fontSize:11,color:selected===r.id?'rgba(255,255,255,0.7)':B.sub}}>{r.sub}</div>
+            </div>
+            {selected===r.id && <span style={{color:'#fff',fontSize:16}}>✓</span>}
+          </div>
+        ))}
+        <button onClick={()=>selected&&onLogin(selected)} style={{width:'100%',marginTop:8,padding:'16px',borderRadius:14,background:selected?B.blue:'#ccc',border:'none',color:'#fff',fontSize:15,fontWeight:700,cursor:selected?'pointer':'default',transition:'background 0.2s'}}>
+          Continue
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Dashboard (Operator/Supervisor) ──────────────────
+function DashboardScreen({role, tickets, onNav, onTicket}){
+  const open = tickets.filter(t=>t.status==='open').length;
+  const inProg = tickets.filter(t=>t.status==='in_progress'||t.status==='assigned').length;
+  const resolved = tickets.filter(t=>t.status==='resolved').length;
+  const critical = tickets.filter(t=>t.severity==='critical'&&t.status==='open').length;
+  return (
+    <div style={{height:'100%',overflowY:'auto',background:B.bg,paddingBottom:90}}>
+      {/* Header */}
+      <div style={{background:B.blue,padding:'60px 20px 24px',borderRadius:'0 0 24px 24px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+          <div>
+            <MooMarkLogo size={28} dark={true}/>
+            <div style={{marginTop:8,color:'rgba(255,255,255,0.6)',fontSize:12}}>Good morning,</div>
+            <div style={{color:'#fff',fontSize:18,fontWeight:700}}>{role==='supervisor'?'Ranjith K., Supervisor':'Ramesh K., Operator'}</div>
+          </div>
+          <div style={{position:'relative',cursor:'pointer'}} onClick={()=>onNav('notifications')}>
+            <div style={{width:40,height:40,borderRadius:12,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18}}>🔔</div>
+            <div style={{position:'absolute',top:-2,right:-2,width:16,height:16,borderRadius:999,background:B.red,border:'2px solid '+B.blue,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,color:'#fff',fontWeight:700}}>2</div>
+          </div>
+        </div>
+        {/* Stats row */}
+        <div style={{display:'flex',gap:8,marginTop:20}}>
+          {[{label:'Open',val:open,color:'#FFB3B3'},{label:'In Progress',val:inProg,color:'#FFE4A3'},{label:'Resolved',val:resolved,color:'#A7F3D0'},{label:'Critical',val:critical,color:'#FF6B6B'}].map(s=>(
+            <div key={s.label} style={{flex:1,background:'rgba(255,255,255,0.12)',borderRadius:12,padding:'10px 8px',textAlign:'center'}}>
+              <div style={{fontSize:22,fontWeight:800,color:s.color,lineHeight:1}}>{s.val}</div>
+              <div style={{fontSize:9,color:'rgba(255,255,255,0.6)',marginTop:3,fontWeight:500,lineHeight:1.2}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Critical Alert Banner */}
+      {critical > 0 && (
+        <div onClick={()=>onNav('tasks')} style={{margin:'16px 16px 0',background:B.redBg,borderRadius:14,padding:'12px 14px',border:'1.5px solid #FCA5A5',display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+          <div style={{width:36,height:36,borderRadius:10,background:B.red,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>⚠️</div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:13,fontWeight:700,color:B.red}}>{critical} Critical ticket{critical>1?'s':''} need attention</div>
+            <div style={{fontSize:11,color:'#991B1B',marginTop:1}}>Tap to view unassigned critical issues</div>
+          </div>
+          <span style={{color:B.red,fontSize:16}}>›</span>
+        </div>
+      )}
+      {/* Recent Tickets */}
+      <div style={{padding:'16px 16px 0'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+          <div style={{fontSize:15,fontWeight:700,color:B.text}}>Recent Tickets</div>
+          <span onClick={()=>onNav('tasks')} style={{fontSize:12,color:B.blue,fontWeight:600,cursor:'pointer'}}>View all</span>
+        </div>
+        {tickets.slice(0,3).map(t=><TicketCard key={t.id} ticket={t} onPress={()=>onTicket(t)}/>)}
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Task List ────────────────────────────────────────
+function TaskListScreen({role, tickets, onTicket}){
+  const [filter, setFilter] = React.useState('all');
+  const [search, setSearch] = React.useState('');
+  const filters = [{id:'all',label:'All'},{id:'open',label:'Open'},{id:'assigned',label:'Assigned'},{id:'in_progress',label:'In Progress'},{id:'resolved',label:'Resolved'}];
+  const filtered = tickets.filter(t=>{
+    if(filter!=='all'&&t.status!==filter) return false;
+    if(search && !t.machine.toLowerCase().includes(search.toLowerCase()) && !t.id.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      {/* Header */}
+      <div style={{background:'#fff',padding:'60px 16px 12px',borderBottom:'1px solid '+B.border}}>
+        <div style={{fontSize:20,fontWeight:800,color:B.text,marginBottom:12}}>All Tickets</div>
+        {/* Search */}
+        <div style={{background:B.bg,borderRadius:12,padding:'10px 14px',display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+          <span style={{fontSize:14,color:B.sub}}>🔍</span>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search machine, ticket ID…" style={{flex:1,border:'none',background:'transparent',fontSize:13,color:B.text,outline:'none',fontFamily:'DM Sans,sans-serif'}}/>
+        </div>
+        {/* Filters */}
+        <div style={{display:'flex',gap:6,overflowX:'auto',paddingBottom:2}}>
+          {filters.map(f=>(
+            <button key={f.id} onClick={()=>setFilter(f.id)} style={{padding:'6px 12px',borderRadius:99,border:'none',background:filter===f.id?B.blue:'#F0F4F8',color:filter===f.id?'#fff':B.sub,fontSize:12,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap',flexShrink:0,fontFamily:'DM Sans,sans-serif'}}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'12px 16px 90px'}}>
+        {filtered.length===0
+          ? <div style={{textAlign:'center',padding:'40px 20px',color:B.sub,fontSize:13}}>No tickets found</div>
+          : filtered.map(t=><TicketCard key={t.id} ticket={t} onPress={()=>onTicket(t)}/>)
+        }
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: New Ticket ───────────────────────────────────────
+function NewTicketScreen({onBack, onSubmit}){
+  const [step, setStep] = React.useState(1);
+  const [form, setForm] = React.useState({machine:'',location:'Zone A',category:'Mechanical',severity:'medium',desc:'',downtime:'',parts:''});
+  const machines = ['Pasteurizer Unit 1','Pasteurizer Unit 2','Pasteurizer Unit 3','Homogenizer H-1','Homogenizer H-2','CIP Station 1','CIP Station 2','Boiler BLR-1','Boiler BLR-2','Cooling Tower CT-1'];
+  const categories = ['Mechanical','Electrical','Plumbing','Civil','Instrumentation','Safety'];
+  const severities = [{id:'critical',label:'Critical',sub:'Production stopped',color:B.red},{id:'high',label:'High',sub:'Major impact',color:B.amber},{id:'medium',label:'Medium',sub:'Minor impact',color:'#7C3AED'},{id:'low',label:'Low',sub:'No immediate impact',color:B.green}];
+  const Field = ({label, children}) => (
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.3}}>{label}</div>
+      {children}
+    </div>
+  );
+  const inputStyle = {width:'100%',padding:'12px 14px',borderRadius:12,border:'1.5px solid '+B.border,fontSize:14,color:B.text,fontFamily:'DM Sans,sans-serif',background:'#fff',outline:'none'};
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      {/* Header */}
+      <div style={{background:'#fff',padding:'60px 16px 16px',borderBottom:'1px solid '+B.border}}>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+          <div onClick={onBack} style={{width:36,height:36,borderRadius:10,background:B.bg,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:16}}>‹</div>
+          <div style={{fontSize:18,fontWeight:800,color:B.text}}>Log New Issue</div>
+        </div>
+        {/* Progress */}
+        <div style={{display:'flex',gap:6}}>
+          {[1,2,3].map(s=>(
+            <div key={s} style={{flex:1,height:4,borderRadius:2,background:s<=step?B.blue:B.border,transition:'background 0.3s'}}/>
+          ))}
+        </div>
+        <div style={{fontSize:11,color:B.sub,marginTop:6}}>Step {step} of 3 — {step===1?'Machine & Category':step===2?'Severity & Details':'Parts & Submit'}</div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'20px 16px'}}>
+        {step===1 && (
+          <>
+            <Field label="Machine">
+              <select value={form.machine} onChange={e=>setForm({...form,machine:e.target.value})} style={{...inputStyle,appearance:'none'}}>
+                <option value="">Select machine…</option>
+                {machines.map(m=><option key={m} value={m}>{m}</option>)}
+              </select>
+            </Field>
+            <Field label="Location / Zone">
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {['Zone A','Zone B','Zone C','Zone D'].map(z=>(
+                  <button key={z} onClick={()=>setForm({...form,location:z})} style={{padding:'8px 16px',borderRadius:99,border:'1.5px solid '+(form.location===z?B.blue:B.border),background:form.location===z?B.blue:'#fff',color:form.location===z?'#fff':B.text,fontSize:13,fontWeight:500,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>{z}</button>
+                ))}
+              </div>
+            </Field>
+            <Field label="Issue Category">
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                {categories.map(c=>(
+                  <button key={c} onClick={()=>setForm({...form,category:c})} style={{padding:'10px',borderRadius:12,border:'1.5px solid '+(form.category===c?B.blue:B.border),background:form.category===c?'#EFF6FF':'#fff',color:form.category===c?B.blue:B.text,fontSize:13,fontWeight:form.category===c?600:400,cursor:'pointer',fontFamily:'DM Sans,sans-serif',textAlign:'left',paddingLeft:12}}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </Field>
+          </>
+        )}
+        {step===2 && (
+          <>
+            <Field label="Severity Level">
+              {severities.map(s=>(
+                <div key={s.id} onClick={()=>setForm({...form,severity:s.id})} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',borderRadius:14,border:'1.5px solid '+(form.severity===s.id?s.color:B.border),background:form.severity===s.id?severityBg(s.id):'#fff',cursor:'pointer',marginBottom:8,transition:'all 0.15s'}}>
+                  <div style={{width:12,height:12,borderRadius:99,background:s.color,flexShrink:0}}/>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:14,fontWeight:600,color:B.text}}>{s.label}</div>
+                    <div style={{fontSize:11,color:B.sub}}>{s.sub}</div>
+                  </div>
+                  {form.severity===s.id&&<span style={{color:s.color,fontSize:16}}>✓</span>}
+                </div>
+              ))}
+            </Field>
+            <Field label="Description">
+              <textarea value={form.desc} onChange={e=>setForm({...form,desc:e.target.value})} rows={4} placeholder="Describe the issue in detail…" style={{...inputStyle,resize:'none',lineHeight:1.5}}/>
+            </Field>
+            <Field label="Estimated Downtime">
+              <input value={form.downtime} onChange={e=>setForm({...form,downtime:e.target.value})} placeholder="e.g. 2 hours" style={inputStyle}/>
+            </Field>
+          </>
+        )}
+        {step===3 && (
+          <>
+            <Field label="Spare Parts Needed">
+              <textarea value={form.parts} onChange={e=>setForm({...form,parts:e.target.value})} rows={3} placeholder="List parts required, one per line…" style={{...inputStyle,resize:'none',lineHeight:1.5}}/>
+            </Field>
+            <Field label="Photo Attachment">
+              <div style={{background:'#fff',borderRadius:14,border:'2px dashed '+B.border,padding:'24px',textAlign:'center',cursor:'pointer'}}>
+                <div style={{fontSize:28,marginBottom:8}}>📷</div>
+                <div style={{fontSize:13,fontWeight:600,color:B.sub}}>Tap to add photos</div>
+                <div style={{fontSize:11,color:B.sub,marginTop:2}}>Max 5 photos, 10MB each</div>
+              </div>
+            </Field>
+            {/* Summary */}
+            <div style={{background:B.blue,borderRadius:16,padding:'16px',marginTop:8}}>
+              <div style={{fontSize:12,fontWeight:700,color:'rgba(255,255,255,0.6)',marginBottom:10,textTransform:'uppercase',letterSpacing:0.5}}>Ticket Summary</div>
+              {[['Machine',form.machine||'—'],['Location',form.location],['Category',form.category],['Severity',form.severity],['Downtime',form.downtime||'—']].map(([k,v])=>(
+                <div key={k} style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                  <span style={{fontSize:12,color:'rgba(255,255,255,0.6)'}}>{k}</span>
+                  <span style={{fontSize:12,fontWeight:600,color:'#fff'}}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      {/* Footer buttons */}
+      <div style={{padding:'12px 16px 32px',background:'#fff',borderTop:'1px solid '+B.border,display:'flex',gap:10}}>
+        {step>1 && <button onClick={()=>setStep(step-1)} style={{flex:1,padding:'14px',borderRadius:14,border:'1.5px solid '+B.border,background:'#fff',color:B.text,fontSize:14,fontWeight:600,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Back</button>}
+        <button onClick={()=>step<3?setStep(step+1):onSubmit(form)} style={{flex:2,padding:'14px',borderRadius:14,border:'none',background:B.blue,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>
+          {step<3?'Continue →':'Submit Ticket'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Ticket Detail ────────────────────────────────────
+function TicketDetailScreen({ticket, role, onBack, onAction}){
+  const [showAssign, setShowAssign] = React.useState(false);
+  const techs = ['Suresh M.','Vijay T.','Kiran L.','Arjun P.'];
+  const [selectedTech, setSelectedTech] = React.useState(techs[0]);
+  const timeline = [
+    {action:'Ticket Raised',by:ticket.createdBy,time:ticket.createdAt,color:B.blue},
+    ...(ticket.status!=='open'?[{action:'Assigned',by:'Supervisor',time:'08:45',color:B.amber}]:[]),
+    ...(ticket.status==='in_progress'||ticket.status==='resolved'?[{action:'Acknowledged',by:ticket.assignedTo,time:'09:10',color:'#7C3AED'}]:[]),
+    ...(ticket.status==='resolved'?[{action:'Resolved',by:ticket.assignedTo,time:'11:30',color:B.green}]:[]),
+  ];
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      {/* Header */}
+      <div style={{background:B.blue,padding:'60px 16px 20px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+          <div onClick={onBack} style={{width:36,height:36,borderRadius:10,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#fff',fontSize:18}}>‹</div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.6)',fontWeight:500}}>{ticket.id}</div>
+            <div style={{fontSize:16,fontWeight:800,color:'#fff',lineHeight:1.2}}>{ticket.machine}</div>
+          </div>
+          <Chip label={ticket.severity.toUpperCase()} color={severityColor(ticket.severity)} bg='rgba(255,255,255,0.15)'/>
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          <Chip label={statusLabel(ticket.status)} color={statusColor(ticket.status)} bg={statusBg(ticket.status)} size='md'/>
+          <Chip label={ticket.category} color='rgba(255,255,255,0.8)' bg='rgba(255,255,255,0.15)' size='md'/>
+          <Chip label={ticket.location} color='rgba(255,255,255,0.8)' bg='rgba(255,255,255,0.15)' size='md'/>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'16px 16px 90px'}}>
+        {/* Description */}
+        <div style={{background:'#fff',borderRadius:16,padding:'16px',marginBottom:12,border:'1px solid '+B.border}}>
+          <div style={{fontSize:12,fontWeight:700,color:B.sub,marginBottom:8,textTransform:'uppercase',letterSpacing:0.4}}>Issue Description</div>
+          <div style={{fontSize:14,color:B.text,lineHeight:1.6}}>{ticket.desc}</div>
+        </div>
+        {/* Details grid */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:12}}>
+          {[['Est. Downtime',ticket.downtime||'—','⏱'],['Spare Parts',ticket.parts?'Required':'None','🔩'],['Photos',ticket.photos>0?`${ticket.photos} attached`:'No photos','📷'],['Logged By',ticket.createdBy,'👤']].map(([l,v,ic])=>(
+            <div key={l} style={{background:'#fff',borderRadius:14,padding:'12px',border:'1px solid '+B.border}}>
+              <div style={{fontSize:18,marginBottom:4}}>{ic}</div>
+              <div style={{fontSize:10,color:B.sub,textTransform:'uppercase',letterSpacing:0.3,fontWeight:600}}>{l}</div>
+              <div style={{fontSize:13,fontWeight:700,color:B.text,marginTop:2}}>{v}</div>
+            </div>
+          ))}
+        </div>
+        {/* Parts list */}
+        {ticket.parts && (
+          <div style={{background:'#fff',borderRadius:16,padding:'16px',marginBottom:12,border:'1px solid '+B.border}}>
+            <div style={{fontSize:12,fontWeight:700,color:B.sub,marginBottom:8,textTransform:'uppercase',letterSpacing:0.4}}>Spare Parts Required</div>
+            {ticket.parts.split(',').map((p,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<ticket.parts.split(',').length-1?'1px solid '+B.border:'none'}}>
+                <div style={{width:6,height:6,borderRadius:99,background:B.teal,flexShrink:0}}/>
+                <span style={{fontSize:13,color:B.text}}>{p.trim()}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Timeline */}
+        <div style={{background:'#fff',borderRadius:16,padding:'16px',marginBottom:12,border:'1px solid '+B.border}}>
+          <div style={{fontSize:12,fontWeight:700,color:B.sub,marginBottom:12,textTransform:'uppercase',letterSpacing:0.4}}>Timeline</div>
+          {timeline.map((t,i)=>(
+            <div key={i} style={{display:'flex',gap:12,marginBottom:i<timeline.length-1?12:0}}>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+                <div style={{width:10,height:10,borderRadius:99,background:t.color,flexShrink:0,marginTop:2}}/>
+                {i<timeline.length-1&&<div style={{width:1,flex:1,background:B.border,marginTop:4}}/>}
+              </div>
+              <div style={{flex:1,paddingBottom:i<timeline.length-1?0:0}}>
+                <div style={{fontSize:13,fontWeight:600,color:B.text}}>{t.action}</div>
+                <div style={{fontSize:11,color:B.sub}}>{t.by} · {t.time}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Assign panel */}
+        {showAssign && (
+          <div style={{background:'#fff',borderRadius:16,padding:'16px',marginBottom:12,border:'1.5px solid '+B.blue}}>
+            <div style={{fontSize:13,fontWeight:700,color:B.text,marginBottom:12}}>Assign to Technician</div>
+            {techs.map(t=>(
+              <div key={t} onClick={()=>setSelectedTech(t)} style={{display:'flex',alignItems:'center',gap:10,padding:'10px',borderRadius:10,background:selectedTech===t?'#EFF6FF':'transparent',cursor:'pointer',marginBottom:4}}>
+                <div style={{width:32,height:32,borderRadius:99,background:B.blue,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700}}>{t[0]}</div>
+                <div style={{flex:1,fontSize:13,fontWeight:500,color:B.text}}>{t}</div>
+                {selectedTech===t&&<span style={{color:B.blue,fontSize:14}}>✓</span>}
+              </div>
+            ))}
+            <button onClick={()=>{setShowAssign(false);onAction('assign',selectedTech)}} style={{width:'100%',marginTop:8,padding:'12px',borderRadius:12,border:'none',background:B.blue,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Confirm Assignment</button>
+          </div>
+        )}
+      </div>
+      {/* Action Bar */}
+      <div style={{padding:'12px 16px 32px',background:'#fff',borderTop:'1px solid '+B.border}}>
+        {role==='supervisor'&&ticket.status==='open'&&(
+          <button onClick={()=>setShowAssign(!showAssign)} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.blue,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Assign Ticket →</button>
+        )}
+        {role==='technician'&&ticket.status==='assigned'&&(
+          <button onClick={()=>onAction('acknowledge')} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.teal,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Acknowledge & Start Work</button>
+        )}
+        {role==='technician'&&ticket.status==='in_progress'&&(
+          <button onClick={()=>onAction('report')} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.green,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Submit Report & Close</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Acknowledge ──────────────────────────────────────
+function AcknowledgeScreen({ticket, onBack, onAck}){
+  const [eta, setEta] = React.useState('');
+  const [note, setNote] = React.useState('');
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      <div style={{background:B.teal,padding:'60px 16px 24px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+          <div onClick={onBack} style={{width:36,height:36,borderRadius:10,background:'rgba(255,255,255,0.2)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#fff',fontSize:18}}>‹</div>
+          <div>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.7)'}}>Task Acknowledgement</div>
+            <div style={{fontSize:17,fontWeight:800,color:'#fff'}}>{ticket.machine}</div>
+          </div>
+        </div>
+        <div style={{background:'rgba(255,255,255,0.15)',borderRadius:14,padding:'12px 14px'}}>
+          <div style={{fontSize:12,color:'rgba(255,255,255,0.7)',marginBottom:4}}>Assigned to you by Supervisor</div>
+          <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>{ticket.desc}</div>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'20px 16px'}}>
+        <div style={{background:'#fff',borderRadius:16,padding:'20px',border:'1px solid '+B.border,marginBottom:16}}>
+          <div style={{fontSize:14,fontWeight:700,color:B.text,marginBottom:4}}>Before you start</div>
+          <div style={{fontSize:13,color:B.sub,lineHeight:1.6}}>Please confirm your availability and estimated completion time. Once acknowledged, the ticket status will change to "In Progress".</div>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.3}}>Estimated Completion Time</div>
+          <input value={eta} onChange={e=>setEta(e.target.value)} placeholder="e.g. 2 hours / 3:00 PM" style={{width:'100%',padding:'12px 14px',borderRadius:12,border:'1.5px solid '+B.border,fontSize:14,color:B.text,fontFamily:'DM Sans,sans-serif',background:'#fff',outline:'none'}}/>
+        </div>
+        <div>
+          <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.3}}>Notes (optional)</div>
+          <textarea value={note} onChange={e=>setNote(e.target.value)} rows={3} placeholder="Any initial observations or safety concerns…" style={{width:'100%',padding:'12px 14px',borderRadius:12,border:'1.5px solid '+B.border,fontSize:14,color:B.text,fontFamily:'DM Sans,sans-serif',background:'#fff',outline:'none',resize:'none',lineHeight:1.5}}/>
+        </div>
+        {/* Parts needed */}
+        {ticket.parts && (
+          <div style={{background:B.amberBg,borderRadius:14,padding:'14px',marginTop:16,border:'1px solid #FDE68A'}}>
+            <div style={{fontSize:12,fontWeight:700,color:B.amber,marginBottom:6}}>⚠ PARTS REQUIRED FROM STORES</div>
+            <div style={{fontSize:12,color:'#92400E'}}>{ticket.parts}</div>
+          </div>
+        )}
+      </div>
+      <div style={{padding:'12px 16px 32px',background:'#fff',borderTop:'1px solid '+B.border}}>
+        <button onClick={()=>onAck(eta,note)} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.teal,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>✓ Acknowledge & Start Work</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Submit Report ────────────────────────────────────
+function ReportScreen({ticket, onBack, onSubmit}){
+  const [work, setWork] = React.useState('');
+  const [partsUsed, setPartsUsed] = React.useState('');
+  const [outcome, setOutcome] = React.useState('resolved');
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      <div style={{background:B.green,padding:'60px 16px 24px'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div onClick={onBack} style={{width:36,height:36,borderRadius:10,background:'rgba(255,255,255,0.2)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#fff',fontSize:18}}>‹</div>
+          <div>
+            <div style={{fontSize:11,color:'rgba(255,255,255,0.7)'}}>Maintenance Report</div>
+            <div style={{fontSize:17,fontWeight:800,color:'#fff'}}>{ticket.machine}</div>
+          </div>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'20px 16px'}}>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.3}}>Work Done</div>
+          <textarea value={work} onChange={e=>setWork(e.target.value)} rows={4} placeholder="Describe what was repaired/replaced and how…" style={{width:'100%',padding:'12px 14px',borderRadius:12,border:'1.5px solid '+B.border,fontSize:14,color:B.text,fontFamily:'DM Sans,sans-serif',background:'#fff',outline:'none',resize:'none',lineHeight:1.5}}/>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.3}}>Parts Actually Used</div>
+          <textarea value={partsUsed} onChange={e=>setPartsUsed(e.target.value)} rows={3} placeholder="List parts consumed with quantities…" style={{width:'100%',padding:'12px 14px',borderRadius:12,border:'1.5px solid '+B.border,fontSize:14,color:B.text,fontFamily:'DM Sans,sans-serif',background:'#fff',outline:'none',resize:'none',lineHeight:1.5}}/>
+        </div>
+        <div style={{marginBottom:16}}>
+          <div style={{fontSize:12,fontWeight:600,color:B.sub,marginBottom:8,textTransform:'uppercase',letterSpacing:0.3}}>Resolution Status</div>
+          {[{id:'resolved',label:'Fully Resolved',sub:'Machine is operational',color:B.green},{id:'partial',label:'Partially Resolved',sub:'Temporary fix, follow-up needed',color:B.amber},{id:'escalated',label:'Escalated',sub:'Requires specialist intervention',color:B.red}].map(o=>(
+            <div key={o.id} onClick={()=>setOutcome(o.id)} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',borderRadius:14,border:'1.5px solid '+(outcome===o.id?o.color:B.border),background:outcome===o.id?severityBg(o.id==='escalated'?'critical':o.id==='partial'?'high':'low'):'#fff',cursor:'pointer',marginBottom:8}}>
+              <div style={{width:12,height:12,borderRadius:99,background:o.color}}/>
+              <div style={{flex:1}}>
+                <div style={{fontSize:13,fontWeight:600,color:B.text}}>{o.label}</div>
+                <div style={{fontSize:11,color:B.sub}}>{o.sub}</div>
+              </div>
+              {outcome===o.id&&<span style={{color:o.color}}>✓</span>}
+            </div>
+          ))}
+        </div>
+        <div style={{background:'#fff',borderRadius:14,padding:'14px',border:'1px solid '+B.border}}>
+          <div style={{fontSize:12,fontWeight:700,color:B.sub,marginBottom:6,textTransform:'uppercase',letterSpacing:0.4}}>Photo Evidence</div>
+          <div style={{display:'flex',gap:8}}>
+            <div style={{width:64,height:64,borderRadius:10,background:'#F0F4F8',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,border:'2px dashed '+B.border,cursor:'pointer'}}>+</div>
+            <div style={{width:64,height:64,borderRadius:10,background:'#F0F4F8',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',fontSize:11,color:B.sub,border:'1px solid '+B.border}}>
+              <span style={{fontSize:20}}>📷</span>
+              <span>Photo 1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{padding:'12px 16px 32px',background:'#fff',borderTop:'1px solid '+B.border}}>
+        <button onClick={()=>onSubmit(work,partsUsed,outcome)} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.green,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Submit Report & Close Ticket ✓</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Notifications ────────────────────────────────────
+function NotificationsScreen(){
+  const iconMap = {assigned:'🔧',critical:'🚨',update:'📋',resolved:'✅',stores:'📦'};
+  const colorMap = {assigned:B.blue,critical:B.red,update:B.blueLight,resolved:B.green,stores:B.teal};
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      <div style={{background:'#fff',padding:'60px 16px 16px',borderBottom:'1px solid '+B.border}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{fontSize:20,fontWeight:800,color:B.text}}>Notifications</div>
+          <span style={{fontSize:12,color:B.blue,fontWeight:600,cursor:'pointer'}}>Mark all read</span>
+        </div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'12px 0 90px'}}>
+        {NOTIFICATIONS.map(n=>(
+          <div key={n.id} style={{display:'flex',alignItems:'flex-start',gap:12,padding:'14px 16px',background:n.unread?'#F0F7FF':'transparent',borderBottom:'1px solid '+B.border,cursor:'pointer',position:'relative'}}>
+            <div style={{width:44,height:44,borderRadius:14,background:colorMap[n.type]+'15',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,flexShrink:0}}>{iconMap[n.type]}</div>
+            <div style={{flex:1}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
+                <div style={{fontSize:13,fontWeight:n.unread?700:500,color:B.text,lineHeight:1.3,flex:1,marginRight:8}}>{n.text}</div>
+                <div style={{fontSize:10,color:B.sub,whiteSpace:'nowrap'}}>{n.time}</div>
+              </div>
+              <div style={{fontSize:12,color:B.sub,marginTop:2}}>{n.sub}</div>
+            </div>
+            {n.unread&&<div style={{position:'absolute',left:6,top:'50%',transform:'translateY(-50%)',width:6,height:6,borderRadius:99,background:B.blue}}/>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Success ──────────────────────────────────────────
+function SuccessScreen({title, sub, onDone}){
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:B.bg,padding:'40px 32px',textAlign:'center'}}>
+      <div style={{width:80,height:80,borderRadius:24,background:B.greenBg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:36,marginBottom:20,border:'2px solid #86EFAC'}}>✓</div>
+      <div style={{fontSize:22,fontWeight:800,color:B.text,marginBottom:8}}>{title}</div>
+      <div style={{fontSize:14,color:B.sub,lineHeight:1.6,marginBottom:32}}>{sub}</div>
+      <button onClick={onDone} style={{padding:'14px 32px',borderRadius:14,border:'none',background:B.blue,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Back to Dashboard</button>
+    </div>
+  );
+}
+
+// ── Screen: Supervisor Dashboard ─────────────────────────────
+function SupervisorDashboard({tickets, onNav, onTicket}){
+  const byStatus = s => tickets.filter(t=>t.status===s).length;
+  return (
+    <div style={{height:'100%',overflowY:'auto',background:B.bg,paddingBottom:90}}>
+      <div style={{background:B.blue,padding:'60px 20px 24px',borderRadius:'0 0 24px 24px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:20}}>
+          <div>
+            <MooMarkLogo size={28} dark={true}/>
+            <div style={{marginTop:8,color:'rgba(255,255,255,0.6)',fontSize:12}}>Supervisor Overview</div>
+            <div style={{color:'#fff',fontSize:18,fontWeight:700}}>Ranjith K.</div>
+          </div>
+          <div onClick={()=>onNav('notifications')} style={{position:'relative',width:40,height:40,borderRadius:12,background:'rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,cursor:'pointer'}}>
+            🔔<div style={{position:'absolute',top:-2,right:-2,width:16,height:16,borderRadius:999,background:B.red,border:'2px solid '+B.blue,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,color:'#fff',fontWeight:700}}>2</div>
+          </div>
+        </div>
+        {/* Big status pills */}
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+          {[{l:'Open',v:byStatus('open'),c:'#FF8A8A',bg:'rgba(255,100,100,0.2)'},{l:'Assigned',v:byStatus('assigned'),c:'#FFD080',bg:'rgba(255,200,80,0.2)'},{l:'In Progress',v:byStatus('in_progress'),c:'#80C8FF',bg:'rgba(80,160,255,0.2)'},{l:'Resolved',v:byStatus('resolved'),c:'#80FFBA',bg:'rgba(80,255,160,0.2)'}].map(s=>(
+            <div key={s.l} style={{background:s.bg,borderRadius:14,padding:'14px',border:'1px solid rgba(255,255,255,0.1)'}}>
+              <div style={{fontSize:28,fontWeight:800,color:s.c,lineHeight:1}}>{s.v}</div>
+              <div style={{fontSize:12,color:'rgba(255,255,255,0.6)',marginTop:4,fontWeight:500}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Unassigned critical */}
+      <div style={{padding:'16px 16px 0'}}>
+        <div style={{fontSize:15,fontWeight:700,color:B.text,marginBottom:10}}>Needs Assignment</div>
+        {tickets.filter(t=>t.status==='open').map(t=><TicketCard key={t.id} ticket={t} onPress={()=>onTicket(t)}/>)}
+        <div style={{fontSize:15,fontWeight:700,color:B.text,marginBottom:10,marginTop:8}}>All Tickets</div>
+        {tickets.slice(0,3).map(t=><TicketCard key={t.id} ticket={t} onPress={()=>onTicket(t)}/>)}
+      </div>
+    </div>
+  );
+}
+
+// ── Screen: Technician Tasks ─────────────────────────────────
+function TechnicianTasksScreen({tickets, onTicket}){
+  const myTickets = tickets.filter(t=>t.assignedTo==='Suresh M.');
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',background:B.bg}}>
+      <div style={{background:'#fff',padding:'60px 16px 16px',borderBottom:'1px solid '+B.border}}>
+        <div style={{fontSize:20,fontWeight:800,color:B.text}}>My Tasks</div>
+        <div style={{fontSize:13,color:B.sub,marginTop:2}}>{myTickets.length} tasks assigned to you</div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'12px 16px 90px'}}>
+        {myTickets.length===0
+          ? <div style={{textAlign:'center',padding:'60px 20px',color:B.sub}}>
+              <div style={{fontSize:40,marginBottom:12}}>✓</div>
+              <div style={{fontSize:15,fontWeight:600}}>No pending tasks</div>
+              <div style={{fontSize:13,marginTop:4}}>Great job! You're all caught up.</div>
+            </div>
+          : myTickets.map(t=>(
+              <div key={t.id}>
+                {t.status==='assigned'&&<div style={{background:B.amberBg,borderRadius:8,padding:'4px 10px',marginBottom:4,fontSize:11,fontWeight:600,color:B.amber,display:'inline-block'}}>⚡ ACTION NEEDED</div>}
+                <TicketCard ticket={t} onPress={()=>onTicket(t)}/>
+              </div>
+            ))
+        }
+      </div>
+    </div>
+  );
+}
+
+// ── Loading overlay ───────────────────────────────────────────
+function LoadingOverlay({message}){
+  return (
+    <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,0.92)',zIndex:200,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:14,borderRadius:'inherit'}}>
+      <div style={{width:44,height:44,borderRadius:14,background:B.blue,display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <MooMarkLogo size={20} dark={true}/>
+      </div>
+      <div style={{fontSize:13,color:B.sub,fontWeight:500}}>{message||'Syncing with Airtable…'}</div>
+      <div style={{width:120,height:3,background:B.border,borderRadius:99,overflow:'hidden'}}>
+        <div style={{height:'100%',background:B.blue,borderRadius:99,animation:'slide 1.2s ease-in-out infinite'}}/>
+      </div>
+      <style>{`@keyframes slide{0%{width:0;margin-left:0}50%{width:80px;margin-left:20px}100%{width:0;margin-left:120px}}`}</style>
+    </div>
+  );
+}
+
+function SyncBadge({syncing, error}){
+  if(!syncing && !error) return null;
+  return (
+    <div style={{position:'absolute',top:54,right:12,zIndex:150,background:error?B.red:B.teal,color:'#fff',fontSize:10,fontWeight:700,padding:'3px 10px',borderRadius:99,letterSpacing:0.3}}>
+      {error ? '⚠ Sync error' : '⟳ Saving…'}
+    </div>
+  );
+}
+
+// ── Main App ─────────────────────────────────────────────────
+function App(){
+  const saved = (() => { try { return JSON.parse(localStorage.getItem('mm_state')||'{}'); } catch(e){return{};} })();
+  const [tweaks, setTweaks] = React.useState({...TWEAK_DEFAULTS, ...saved.tweaks});
+  const [screen, setScreen] = React.useState(saved.screen||'login');
+  const [role, setRole] = React.useState(saved.role||null);
+  const [activeTab, setActiveTab] = React.useState('home');
+  const [selectedTicket, setSelectedTicket] = React.useState(null);
+  const [tickets, setTickets] = React.useState(TICKETS);
+  const [tweaksVisible, setTweaksVisible] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [syncing, setSyncing] = React.useState(false);
+  const [syncError, setSyncError] = React.useState(false);
+
+  // ── Fetch tickets from Airtable ──
+  const refreshTickets = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const remote = await atFetchAll();
+      setTickets(remote.length > 0 ? remote : TICKETS);
+    } catch(e) {
+      console.warn('Airtable fetch error:', e.message);
+      // keep local data on error
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch on mount + every 30s auto-refresh
+  React.useEffect(()=>{
+    refreshTickets();
+    const interval = setInterval(refreshTickets, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(()=>{
+    localStorage.setItem('mm_state', JSON.stringify({screen,role,tweaks}));
+  },[screen,role,tweaks]);
+
+  // Tweaks postMessage
+  React.useEffect(()=>{
+    const handler = e => {
+      if(e.data?.type==='__activate_edit_mode') setTweaksVisible(true);
+      if(e.data?.type==='__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({type:'__edit_mode_available'},'*');
+    return ()=>window.removeEventListener('message', handler);
+  },[]);
+
+  const setTweak = (k,v) => {
+    const next = {...tweaks,[k]:v};
+    setTweaks(next);
+    window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[k]:v}},'*');
+  };
+
+  const roleName = r => r==='operator'?'Ramesh K.':r==='supervisor'?'Ranjith K.':r==='technician'?'Suresh M.':r==='stores'?'Stores User':'Admin';
+
+  const handleLogin = r => { setRole(r); setScreen('main'); setActiveTab('home'); refreshTickets(); };
+  const handleNav = tab => {
+    if(tab==='new') { setScreen('new_ticket'); return; }
+    setActiveTab(tab); setScreen('main');
+  };
+  const handleTicket = t => { setSelectedTicket(t); setScreen('ticket_detail'); };
+
+  // ── Optimistic update helper ──
+  const applyAndSync = async (localUpdate, airtableId, atFields, successScreen) => {
+    // Optimistic local update
+    const updated = localUpdate();
+    setSelectedTicket(updated);
+    setSyncing(true); setSyncError(false);
+    try {
+      const synced = await atUpdate(airtableId, atFields);
+      setTickets(prev => prev.map(t => t.airtableId === airtableId ? synced : t));
+      setSelectedTicket(synced);
+    } catch(e) {
+      console.warn('Sync error:', e.message);
+      setSyncError(true);
+      setTimeout(()=>setSyncError(false), 3000);
+    } finally {
+      setSyncing(false);
+    }
+    if(successScreen) setScreen(successScreen);
+  };
+
+  const handleTicketAction = (action, data) => {
+    if(action==='assign'){
+      const airtableId = selectedTicket.airtableId;
+      applyAndSync(
+        () => {
+          const u = {...selectedTicket, status:'assigned', assignedTo:data};
+          setTickets(prev=>prev.map(t=>t.id===selectedTicket.id?u:t));
+          return u;
+        },
+        airtableId,
+        { 'Status': 'Assigned', 'Assigned To': data },
+        'success_assign'
+      );
+    } else if(action==='acknowledge'){
+      setScreen('acknowledge');
+    } else if(action==='report'){
+      setScreen('report');
+    }
+  };
+
+  const handleAcknowledge = async (eta, note) => {
+    const airtableId = selectedTicket.airtableId;
+    applyAndSync(
+      () => {
+        const u = {...selectedTicket, status:'in_progress'};
+        setTickets(prev=>prev.map(t=>t.id===selectedTicket.id?u:t));
+        return u;
+      },
+      airtableId,
+      { 'Status': 'In Progress', 'Resolution Notes': note ? `[ETA: ${eta}] ${note}` : `ETA: ${eta}` },
+      'success_ack'
+    );
+  };
+
+  const handleReport = async (work, partsUsed, outcome) => {
+    const airtableId = selectedTicket.airtableId;
+    const newStatus = outcome==='resolved'?'resolved':outcome==='partial'?'in_progress':'open';
+    const atStatus  = outcome==='resolved'?'Resolved':outcome==='partial'?'In Progress':'Open';
+    applyAndSync(
+      () => {
+        const u = {...selectedTicket, status:newStatus, resolutionNotes:work};
+        setTickets(prev=>prev.map(t=>t.id===selectedTicket.id?u:t));
+        return u;
+      },
+      airtableId,
+      {
+        'Status': atStatus,
+        'Resolution Notes': `${work}\n\nParts used: ${partsUsed}`,
+        'Resolved At': outcome==='resolved' ? new Date().toISOString() : undefined,
+      },
+      'success_report'
+    );
+  };
+
+  const handleNewTicket = async (form) => {
+    const ticketId = generateTicketId();
+    const atFields = {
+      'Title':       `${ticketId}: ${form.machine}`,
+      'Description': form.desc || '',
+      'Plant':       form.location || '',
+      'Category':    form.category || '',
+      'Priority':    sevToAT(form.severity || 'medium'),
+      'Status':      'Open',
+      'Raised By':   roleName(role),
+    };
+    setSyncing(true); setSyncError(false);
+    try {
+      const newTicket = await atCreate(atFields);
+      setTickets(prev => [newTicket, ...prev]);
+    } catch(e) {
+      console.warn('Create error:', e.message);
+      // Add local fallback
+      const fallback = { id:ticketId, machine:form.machine, location:form.location, category:form.category, severity:form.severity, status:'open', desc:form.desc||'', assignedTo:null, createdBy:roleName(role), createdAt:'Just now', downtime:form.downtime||'', parts:form.parts||'', photos:0, airtableId:null };
+      setTickets(prev=>[fallback,...prev]);
+      setSyncError(true);
+      setTimeout(()=>setSyncError(false),3000);
+    } finally {
+      setSyncing(false);
+    }
+    setScreen('success_ticket');
+  };
+
+  const renderScreen = () => {
+    if(screen==='login') return <LoginScreen onLogin={handleLogin}/>;
+    if(screen==='new_ticket') return <NewTicketScreen onBack={()=>setScreen('main')} onSubmit={handleNewTicket}/>;
+    if(screen==='ticket_detail'&&selectedTicket) return <TicketDetailScreen ticket={selectedTicket} role={role} onBack={()=>{setScreen('main');}} onAction={handleTicketAction}/>;
+    if(screen==='acknowledge'&&selectedTicket) return <AcknowledgeScreen ticket={selectedTicket} onBack={()=>setScreen('ticket_detail')} onAck={handleAcknowledge}/>;
+    if(screen==='report'&&selectedTicket) return <ReportScreen ticket={selectedTicket} onBack={()=>setScreen('ticket_detail')} onSubmit={handleReport}/>;
+    if(screen==='success_ticket') return <SuccessScreen title="Ticket Raised!" sub="Your issue has been saved to the shared database. The supervisor will assign it shortly." onDone={()=>{setScreen('main');setActiveTab('home');}}/>;
+    if(screen==='success_assign') return <SuccessScreen title="Task Assigned!" sub={`Assigned to ${selectedTicket?.assignedTo} and saved to Airtable.`} onDone={()=>{setScreen('main');setActiveTab('home');}}/>;
+    if(screen==='success_ack') return <SuccessScreen title="Task Acknowledged!" sub="Status updated to In Progress in the shared database." onDone={()=>{setScreen('main');setActiveTab('tasks');}}/>;
+    if(screen==='success_report') return <SuccessScreen title="Report Submitted!" sub="Maintenance report filed and ticket closed in Airtable." onDone={()=>{setScreen('main');setActiveTab('tasks');}}/>;
+    // Main tabbed screens
+    if(screen==='main'){
+      const content = (() => {
+        if(activeTab==='notifications') return <NotificationsScreen/>;
+        if(activeTab==='profile') return (
+          <div style={{padding:'60px 16px',background:B.bg,height:'100%'}}>
+            <div style={{background:'#fff',borderRadius:20,padding:'24px',textAlign:'center',border:'1px solid '+B.border,marginBottom:16}}>
+              <div style={{width:64,height:64,borderRadius:20,background:B.blue,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:700,margin:'0 auto 12px'}}>{role==='operator'?'R':role==='supervisor'?'S':role==='technician'?'T':role[0].toUpperCase()}</div>
+              <div style={{fontSize:16,fontWeight:800,color:B.text}}>{roleName(role)}</div>
+              <div style={{fontSize:13,color:B.sub,marginTop:2}}>{role.charAt(0).toUpperCase()+role.slice(1)} · Meerut Plant</div>
+              <Chip label={role.toUpperCase()} color={B.blue} bg='#EFF6FF' size='md'/>
+            </div>
+            <div style={{background:'#fff',borderRadius:16,padding:'14px 16px',border:'1px solid '+B.border,marginBottom:12,display:'flex',alignItems:'center',gap:10}}>
+              <div style={{width:8,height:8,borderRadius:99,background:B.teal,flexShrink:0}}/>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:B.text}}>Connected to Airtable</div>
+                <div style={{fontSize:11,color:B.sub}}>Live sync · {tickets.length} tickets loaded</div>
+              </div>
+              <button onClick={refreshTickets} style={{marginLeft:'auto',padding:'5px 10px',borderRadius:8,border:'1px solid '+B.border,background:B.bg,color:B.sub,fontSize:11,fontWeight:600,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>↻ Refresh</button>
+            </div>
+            <button onClick={()=>{setScreen('login');setRole(null);}} style={{width:'100%',padding:'14px',borderRadius:14,border:'none',background:B.redBg,color:B.red,fontSize:14,fontWeight:700,cursor:'pointer',fontFamily:'DM Sans,sans-serif'}}>Switch Role / Logout</button>
+          </div>
+        );
+        if(role==='technician'){
+          if(activeTab==='tasks') return <TechnicianTasksScreen tickets={tickets} onTicket={handleTicket}/>;
+          return <DashboardScreen role={role} tickets={tickets.filter(t=>t.assignedTo==='Suresh M.')} onNav={handleNav} onTicket={handleTicket}/>;
+        }
+        if(role==='supervisor'){
+          if(activeTab==='tasks') return <TaskListScreen role={role} tickets={tickets} onTicket={handleTicket}/>;
+          return <SupervisorDashboard tickets={tickets} onNav={handleNav} onTicket={handleTicket}/>;
+        }
+        if(activeTab==='tasks') return <TaskListScreen role={role} tickets={tickets} onTicket={handleTicket}/>;
+        return <DashboardScreen role={role} tickets={tickets} onNav={handleNav} onTicket={handleTicket}/>;
+      })();
+      return (
+        <div style={{height:'100%',position:'relative'}}>
+          {content}
+          <SyncBadge syncing={syncing} error={syncError}/>
+          <BottomNav active={activeTab} onNav={handleNav} role={role}/>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="stage">
+      {/* iOS Device */}
+      <div style={{transform:'scale(0.88)',transformOrigin:'center center',flexShrink:0}}>
+        <IOSDevice width={390} height={844} dark={false}>
+          {loading && screen!=='login' && <LoadingOverlay message="Loading tickets from Airtable…"/>}
+          {renderScreen()}
+        </IOSDevice>
+      </div>
+      {/* Tweaks */}
+      <div className={`tweaks-panel ${tweaksVisible?'visible':''}`}>
+        <div className="tweaks-title">Tweaks</div>
+        <div className="tweak-row">
+          <span className="tweak-label">Role View</span>
+          <div className="tweak-options">
+            {['operator','technician','supervisor','stores'].map(r=>(
+              <button key={r} className={`tweak-btn ${tweaks.role===r?'active':''}`} onClick={()=>{setTweak('role',r);if(r!==role){handleLogin(r);}}}>{r}</button>
+            ))}
+          </div>
+        </div>
+        <div className="tweak-row">
+          <span className="tweak-label">Current Screen</span>
+          <div className="tweak-options">
+            {['home','tasks','notifications','new_ticket','ticket_detail'].map(s=>(
+              <button key={s} className={`tweak-btn ${(screen==='main'?activeTab:screen)===s?'active':''}`} onClick={()=>{
+                if(s==='new_ticket'){setScreen('new_ticket');}
+                else if(s==='ticket_detail'){setSelectedTicket(TICKETS[1]);setScreen('ticket_detail');}
+                else{setScreen('main');setActiveTab(s);}
+              }}>{s.replace('_',' ')}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<div id="root"></div>
+</body>
+</html>
